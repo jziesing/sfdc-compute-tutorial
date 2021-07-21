@@ -5,15 +5,17 @@
 
 
 let express = require('express'),
-    ApiRoutes = express.Router();
+    PublicFetchThings = require('./PubApiRoutes/FetchThings'),
+    ApiRoutes = express.Router(),
+    PubFetchThings = new PublicFetchThings();
 
 
 
 /*
  *  routes
  */
-// example route
-// ApiRoutes.get("/url/path/", ClassName.methodName);
+// get things
+ApiRoutes.get("/fetch/things", PubFetchThings.FetchThingsGet);
 
 /*
  * export
