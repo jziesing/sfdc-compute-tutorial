@@ -12,13 +12,27 @@ class HomePage extends React.Component {
 		super(props);
 		this.state = {
             isLoading: false,
-            btnClicked: false
+            btnClicked: false,
+            things: null,
         };
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
 	}
 
     handleFormSubmit(event)  {
-        this.setState({btnClicked: true});
+        this.setState({isLoading: true});
+        let fetchAccountsURL = '/fetch/things/';
+        ajax.get(fetchAccountsURL)
+        	.end((error, response) => {
+          		if (!error && response) {
+                    console.log(JSON.parse(response.text));
+                    this.setState({things: JSON.parse(response.text)});
+
+          		} else {
+              		console.log(`Error fetching data`, error);
+          		}
+                this.setState({btnClicked: true});
+                this.setState({isLoading: false});
+        	});
     }
 
     btnMarkup() {
@@ -44,6 +58,17 @@ class HomePage extends React.Component {
 		}
 	}
 
+
+    tableData() {
+
+        return this.state.things.map((thing, index) => {
+            return (
+                <tr key={index}><td>{thing.id}</td><td>{thing.title}</td><td>{thing.description}</td></tr>
+            );
+        });
+
+    }
+
     dataMarkup() {
 
         if(this.state.btnClicked) {
@@ -57,11 +82,7 @@ class HomePage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th>#</th>
-                            <th>No</th>
-                            <th>Database</th>
-                        </tr>
+                        {  this.tableData() }
                     </tbody>
                 </table>
             )
@@ -78,8 +99,8 @@ class HomePage extends React.Component {
 			<div>
 				<div class="row">
 	                <div class="text-center">
-	                    <h1>Heroku App Dev 101</h1>
-                        <p>you deployed a heroku web app!</p>
+	                    <h1>Heroku Intro</h1>
+                        <p>Now click the button to get data from your database..</p>
 	                </div>
 		    	</div>
                 <div class="row">

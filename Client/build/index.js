@@ -32559,7 +32559,8 @@
 
 	        _this.state = {
 	            isLoading: false,
-	            btnClicked: false
+	            btnClicked: false,
+	            things: null
 	        };
 	        _this.handleFormSubmit = _this.handleFormSubmit.bind(_this);
 	        return _this;
@@ -32568,7 +32569,20 @@
 	    _createClass(HomePage, [{
 	        key: 'handleFormSubmit',
 	        value: function handleFormSubmit(event) {
-	            this.setState({ btnClicked: true });
+	            var _this2 = this;
+
+	            this.setState({ isLoading: true });
+	            var fetchAccountsURL = '/fetch/things/';
+	            ajax.get(fetchAccountsURL).end(function (error, response) {
+	                if (!error && response) {
+	                    console.log(JSON.parse(response.text));
+	                    _this2.setState({ things: JSON.parse(response.text) });
+	                } else {
+	                    console.log('Error fetching data', error);
+	                }
+	                _this2.setState({ btnClicked: true });
+	                _this2.setState({ isLoading: false });
+	            });
 	        }
 	    }, {
 	        key: 'btnMarkup',
@@ -32609,6 +32623,32 @@
 	            }
 	        }
 	    }, {
+	        key: 'tableData',
+	        value: function tableData() {
+
+	            return this.state.things.map(function (thing, index) {
+	                return _react2.default.createElement(
+	                    'tr',
+	                    { key: index },
+	                    _react2.default.createElement(
+	                        'td',
+	                        null,
+	                        thing.id
+	                    ),
+	                    _react2.default.createElement(
+	                        'td',
+	                        null,
+	                        thing.title
+	                    ),
+	                    _react2.default.createElement(
+	                        'td',
+	                        null,
+	                        thing.description
+	                    )
+	                );
+	            });
+	        }
+	    }, {
 	        key: 'dataMarkup',
 	        value: function dataMarkup() {
 
@@ -32642,25 +32682,7 @@
 	                    _react2.default.createElement(
 	                        'tbody',
 	                        null,
-	                        _react2.default.createElement(
-	                            'tr',
-	                            null,
-	                            _react2.default.createElement(
-	                                'th',
-	                                null,
-	                                '#'
-	                            ),
-	                            _react2.default.createElement(
-	                                'th',
-	                                null,
-	                                'No'
-	                            ),
-	                            _react2.default.createElement(
-	                                'th',
-	                                null,
-	                                'Database'
-	                            )
-	                        )
+	                        this.tableData()
 	                    )
 	                );
 	            } else {
@@ -32683,12 +32705,12 @@
 	                        _react2.default.createElement(
 	                            'h1',
 	                            null,
-	                            'Heroku App Dev 101'
+	                            'Heroku Intro'
 	                        ),
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
-	                            'you deployed a heroku web app!'
+	                            'Now click the button to get data from your database..'
 	                        )
 	                    )
 	                ),
