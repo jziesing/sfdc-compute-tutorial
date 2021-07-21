@@ -13,25 +13,61 @@ class HomePage extends React.Component {
 		this.state = {
             isLoading: false,
             btnClicked: false,
-            things: null,
+            things: [],
+            jobs: [],
+            jobid: 0,
+            addedJob: false
         };
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        this.handleMakeData = this.handleMakeData.bind(this);
+        this.handleCheckJob = this.handleCheckJob.bind(this);
 	}
 
     handleFormSubmit(event)  {
         this.setState({isLoading: true});
-        let fetchAccountsURL = '/fetch/things/';
-        ajax.get(fetchAccountsURL)
+        let fetchThingsURL = '/fetch/things/';
+        ajax.get(fetchThingsURL)
         	.end((error, response) => {
           		if (!error && response) {
-                    console.log(JSON.parse(response.text));
                     this.setState({things: JSON.parse(response.text)});
-
           		} else {
               		console.log(`Error fetching data`, error);
           		}
-                this.setState({btnClicked: true});
-                this.setState({isLoading: false});
+                this.setState({btnClicked: true, isLoading: false});
+        	});
+    }
+
+    handleCheckJob(event) {
+        this.setState({isLoading: true});
+        let startJobURL = '/job/' + this.state.jobid;
+        ajax.get(startJobURL)
+			.set({ 'Content-Type': 'application/json' })
+        	.end((error, response) => {
+          		if (!error && response) {
+
+	                console.log(this.state);
+                    console.log(response.text);
+                    // this.setState({things: JSON.parse(response.text)});\
+				}
+				this.setState({btnClicked: true, isLoading: false });
+        	});
+    }
+
+    handleMakeData(event) {
+        this.setState({isLoading: true});
+        let startJobURL = '/jobs/run/make-things';
+        ajax.post(startJobURL)
+			.set({ 'Content-Type': 'application/json' })
+			.send({num_things: 20})
+        	.end((error, response) => {
+          		if (!error && response) {
+
+	                console.log(this.state);
+                    console.log(response.text);
+                    let respndata =  JSON.parse(response.text);
+                    this.setState({jobid: respndata.jobid, addedJob: false});
+				}
+				this.setState({btnClicked: true, isLoading: false});
         	});
     }
 
@@ -39,23 +75,49 @@ class HomePage extends React.Component {
 		if(this.state.isLoading) {
 			return (
 				<form class="form-horizontal" action="">
-					<div class="col-sm-offset-4 col-sm-4">
+					<div class="form-group">
 						<i class="fa fa-spinner fa-spin loadingCon" />
 					</div>
 					<div class="form-group">
-							<button type="button" class="btn btn-cSend disabled">Get Data</button>
+						<button type="button" class="btn btn-cSend disabled">Get Data</button>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-cSend disabled">Make Data</button>
+					</div>
+                    <div class="form-group">
+                            <button type="button" onClick={this.handleCheckJob} class="btn btn-cSend">Check Job</button>
+					</div>
+				</form>
+			);
+		} else if(this.state.addedJob) {
+			return (
+				<form class="form-horizontal">
+					<div class="form-group">
+						<button type="button" onClick={this.handleFormSubmit} class="btn btn-cSend">Get Data</button>
+					</div>
+                    <div class="form-group">
+                            <button type="button" onClick={this.handleMakeData} class="btn btn-cSend">Make Data</button>
+					</div>
+                    <div class="form-group">
+                            <button type="button" onClick={this.handleCheckJob} class="btn btn-cSend">Check Job</button>
 					</div>
 				</form>
 			);
 		} else {
-			return (
+            return (
 				<form class="form-horizontal">
 					<div class="form-group">
-							<button type="button" onClick={this.handleFormSubmit} class="btn btn-cSend">Get Data</button>
+						<button type="button" onClick={this.handleFormSubmit} class="btn btn-cSend">Get Data</button>
+					</div>
+                    <div class="form-group">
+                            <button type="button" onClick={this.handleMakeData} class="btn btn-cSend">Make Data</button>
+					</div>
+                    <div class="form-group">
+                            <button type="button" onClick={this.handleCheckJob} class="btn btn-cSend disabled">Check Job</button>
 					</div>
 				</form>
 			);
-		}
+        }
 	}
 
 
